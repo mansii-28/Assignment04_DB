@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank and Loan Search Performance</title>
+    <style>
+        :root {
+            --primary-navy: #0f172a;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            
+            --purple-primary: #7c3aed;
+            --purple-hover: #6d28d9;
+            --purple-light: #f3e8ff;
+            
+            --green-primary: #10b981;
+            --green-hover: #059669;
+            --green-light: #d1fae5;
+            
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            font-size: 16px;
+        }
+
+        .header {
+            background-color: var(--primary-navy);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            color: #cbd5e1;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .large-card {
+            flex: 1;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .large-card-header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .large-card.purple .large-card-header {
+            background-color: var(--purple-primary);
+            color: white;
+        }
+
+        .large-card.green .large-card-header {
+            background-color: var(--green-primary);
+            color: white;
+        }
+
+        .large-card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .large-card-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .options-container {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .option-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .option-card h3 {
+            margin: 0 0 5px 0;
+            color: var(--text-main);
+            font-size: 1.2rem;
+        }
+
+        .option-card p {
+            margin: 0 0 15px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-family: inherit;
+            background-color: white;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .purple button {
+            background-color: var(--purple-primary);
+        }
+
+        .purple button:hover {
+            background-color: var(--purple-hover);
+        }
+
+        .green button {
+            background-color: var(--green-primary);
+        }
+
+        .green button:hover {
+            background-color: var(--green-hover);
+        }
+
+        .results-section {
+            max-width: 1200px;
+            margin: 0 auto 50px auto;
+            padding: 0 20px;
+        }
+
+        .results-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 30px;
+            border-top: 5px solid var(--primary-navy);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .results-titles h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.6rem;
+            color: var(--primary-navy);
+        }
+
+        .results-titles h3 {
+            margin: 0;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .results-stats {
+            text-align: right;
+        }
+
+        .execution-time {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-navy);
+            margin: 10px 0;
+        }
+
+        .badge-search {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .data-fetched-note {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: inline-block;
+            background: #f1f5f9;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--text-main);
+            position: sticky;
+            top: 0;
+        }
+
+        /* Match table header with mode color */
+        .results-card.mode-without_index th {
+            background-color: var(--purple-light);
+            color: var(--purple-hover);
+        }
+        
+        .results-card.mode-with_index th {
+            background-color: var(--green-light);
+            color: var(--green-hover);
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-approved { background-color: #d1fae5; color: #065f46; }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
+        .status-closed { background-color: #dbeafe; color: #1e40af; }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            .results-header {
+                flex-direction: column;
+                text-align: left;
+            }
+            .results-stats {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🏦 Bank & Loan Search Performance</h1>
+        <p>PostgreSQL Index Demonstration</p>
+    </div>
+
+    <div class="container">
+        <!-- Search Without Indexing -->
+        <div class="large-card purple">
+            <div class="large-card-header">
+                <h2>Search Without Indexing</h2>
+                <p>Sequential Scan (Slower)</p>
+            </div>
+            
+            <div class="options-container">
+                <!-- Option 1 -->
+                <div class="option-card">
+                    <h3>Option 01: Single Table Search</h3>
+                    <p>Search in Loans table only</p>
+                    {% set is_active = result_data and result_data.mode_title == 'Search Without Indexing' and 'Option 01' in result_data.option_title %}
+                    <form method="POST" autocomplete="off">
+                        <input type="hidden" name="mode" value="without_index">
+                        <input type="hidden" name="option" value="single">
+                        
+                        <label>Select Loan Type:</label>
+                        <select name="search_value" required>
+                            <option value="" {% if not is_active %}selected{% endif %} disabled>Select a loan type</option>
+                            <option {% if is_active and result_data.search_value == 'Home Loan' %}selected{% endif %}>Home Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Auto Loan' %}selected{% endif %}>Auto Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Personal Loan' %}selected{% endif %}>Personal Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Business Loan' %}selected{% endif %}>Business Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Education Loan' %}selected{% endif %}>Education Loan</option>
+                        </select>
+                        <button type="submit">Search Loans</button>
+                    </form>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="option-card">
+                    <h3>Option 02: Two Tables Join</h3>
+                    <p>Join Loans with Banks table</p>
+                    {% set is_active = result_data and result_data.mode_title == 'Search Without Indexing' and 'Option 02' in result_data.option_title %}
+                    <form method="POST" autocomplete="off">
+                        <input type="hidden" name="mode" value="without_index">
+                        <input type="hidden" name="option" value="join">
+                        
+                        <label>Select Loan Type:</label>
+                        <select name="search_value" required>
+                            <option value="" {% if not is_active %}selected{% endif %} disabled>Select a loan type</option>
+                            <option {% if is_active and result_data.search_value == 'Home Loan' %}selected{% endif %}>Home Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Auto Loan' %}selected{% endif %}>Auto Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Personal Loan' %}selected{% endif %}>Personal Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Business Loan' %}selected{% endif %}>Business Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Education Loan' %}selected{% endif %}>Education Loan</option>
+                        </select>
+                        <button type="submit">Search Joined Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search With Indexing -->
+        <div class="large-card green">
+            <div class="large-card-header">
+                <h2>Search With Indexing</h2>
+                <p>Index Scan (Faster)</p>
+            </div>
+            
+            <div class="options-container">
+                <!-- Option 1 -->
+                <div class="option-card">
+                    <h3>Option 01: Single Table Search</h3>
+                    <p>Search in Loans table only</p>
+                    {% set is_active = result_data and result_data.mode_title == 'Search With Indexing' and 'Option 01' in result_data.option_title %}
+                    <form method="POST" autocomplete="off">
+                        <input type="hidden" name="mode" value="with_index">
+                        <input type="hidden" name="option" value="single">
+                        
+                        <label>Select Loan Type:</label>
+                        <select name="search_value" required>
+                            <option value="" {% if not is_active %}selected{% endif %} disabled>Select a loan type</option>
+                            <option {% if is_active and result_data.search_value == 'Home Loan' %}selected{% endif %}>Home Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Auto Loan' %}selected{% endif %}>Auto Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Personal Loan' %}selected{% endif %}>Personal Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Business Loan' %}selected{% endif %}>Business Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Education Loan' %}selected{% endif %}>Education Loan</option>
+                        </select>
+                        <button type="submit">Search Loans</button>
+                    </form>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="option-card">
+                    <h3>Option 02: Two Tables Join</h3>
+                    <p>Join Loans with Banks table</p>
+                    {% set is_active = result_data and result_data.mode_title == 'Search With Indexing' and 'Option 02' in result_data.option_title %}
+                    <form method="POST" autocomplete="off">
+                        <input type="hidden" name="mode" value="with_index">
+                        <input type="hidden" name="option" value="join">
+                        
+                        <label>Select Loan Type:</label>
+                        <select name="search_value" required>
+                            <option value="" {% if not is_active %}selected{% endif %} disabled>Select a loan type</option>
+                            <option {% if is_active and result_data.search_value == 'Home Loan' %}selected{% endif %}>Home Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Auto Loan' %}selected{% endif %}>Auto Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Personal Loan' %}selected{% endif %}>Personal Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Business Loan' %}selected{% endif %}>Business Loan</option>
+                            <option {% if is_active and result_data.search_value == 'Education Loan' %}selected{% endif %}>Education Loan</option>
+                        </select>
+                        <button type="submit">Search Joined Data</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if result_data %}
+    <div class="results-section">
+        {% set mode_class = 'mode-with_index' if 'With Indexing' in result_data.mode_title else 'mode-without_index' %}
+        <div class="results-card {{ mode_class }}">
+            <div class="results-header">
+                <div class="results-titles">
+                    <span class="badge-search">Search Value: {{ result_data.search_value }}</span>
+                    <h2>{{ result_data.mode_title }}</h2>
+                    <h3>{{ result_data.option_title }}</h3>
+                </div>
+                <div class="results-stats">
+                    <div class="data-fetched-note">Data Fetched: Top 5 Rows</div>
+                    <div class="execution-time">{{ result_data.execution_time }} ms</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">Execution Time</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for col in result_data.columns %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result_data.results %}
+                        <tr>
+                            {% for value in row %}
+                                <td>
+                                    {% set col_name = result_data.columns[loop.index0] %}
+                                    {% if col_name == 'Status' %}
+                                        <span class="status-badge status-{{ value|lower }}">{{ value }}</span>
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p><strong>PostgreSQL Database Performance Analyzer</strong></p>
+        <p>CSE 412 Assignment 04</p>
+    </div>
+
+
+    <script>
+        // Prevent form resubmission on page refresh
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+</body>
+
+</html>
