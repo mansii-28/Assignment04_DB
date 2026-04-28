@@ -1,34 +1,30 @@
--- PostgreSQL Schema for Assignment 04 Bank & Loan Search Performance
+DROP TABLE IF EXISTS loans;
+DROP TABLE IF EXISTS banks;
 
--- Create Banks table
-CREATE TABLE IF NOT EXISTS banks (
+CREATE TABLE banks (
     bank_id SERIAL PRIMARY KEY,
-    bank_name VARCHAR(100) NOT NULL,
-    branch_name VARCHAR(100) NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
-    zip_code VARCHAR(20) NOT NULL,
+    bank_name VARCHAR(100),
+    branch_name VARCHAR(100),
+    city VARCHAR(80),
+    state VARCHAR(50),
+    zip_code VARCHAR(15),
     phone VARCHAR(20),
     manager_name VARCHAR(100),
-    established_year INTEGER,
+    established_year INT,
     bank_type VARCHAR(50),
-    total_assets NUMERIC(15, 2)
+    total_assets NUMERIC(15,2)
 );
 
--- Create Loans table
-CREATE TABLE IF NOT EXISTS loans (
+CREATE TABLE loans (
     loan_id SERIAL PRIMARY KEY,
-    bank_id INTEGER REFERENCES banks(bank_id),
-    borrower_name VARCHAR(100) NOT NULL,
-    borrower_email VARCHAR(100) NOT NULL,
-    loan_type VARCHAR(50) NOT NULL,
-    loan_amount NUMERIC(15, 2) NOT NULL,
-    interest_rate NUMERIC(5, 2) NOT NULL,
-    loan_term_months INTEGER NOT NULL,
+    bank_id INT REFERENCES banks(bank_id),
+    borrower_name VARCHAR(100),
+    borrower_email VARCHAR(120),
+    loan_type VARCHAR(60),
+    loan_amount NUMERIC(12,2),
+    interest_rate NUMERIC(5,2),
+    loan_term_months INT,
     issue_date DATE,
-    status VARCHAR(20) NOT NULL,
-    credit_score INTEGER
+    status VARCHAR(40),
+    credit_score INT
 );
-
--- Note: Indexes are created and dropped dynamically by the Flask application
--- to demonstrate performance differences.
