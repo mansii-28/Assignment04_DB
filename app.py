@@ -5,9 +5,10 @@ import os
 
 app = Flask(__name__)
 
+# DB Connection information
 DB_NAME = "Assignment04_DB"
 USER = "postgres"
-PASSWORD = os.getenv("DB_PASSWORD", "your_postgres_password")
+PASSWORD = os.getenv("DB_PASSWORD", "[PASSWORD]")
 HOST = "localhost"
 PORT = "5432"
 
@@ -37,6 +38,7 @@ def get_connection():
     )
 
 def run_query(query, params=None):
+    """ Connect to DB, run a query, and return results with timing """
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -50,11 +52,13 @@ def run_query(query, params=None):
     cursor.close()
     connection.close()
 
+    # Time in milliseconds
     execution_time = round((end_time - start_time) * 1000, 4)
 
     return columns, results, execution_time
 
 def drop_indexes():
+    """ Delete indexes for the 'Without Indexing' part """
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -67,6 +71,7 @@ def drop_indexes():
     connection.close()
 
 def create_indexes():
+    """ Create indexes for the 'With Indexing' part """
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -88,6 +93,7 @@ def index():
         option = request.form.get("option")
 
         if search_value:
+            # Handle indexing based on the mode
             if mode == "without_index":
                 drop_indexes()
                 mode_title = "Search Without Indexing"
@@ -95,6 +101,7 @@ def index():
                 create_indexes()
                 mode_title = "Search With Indexing"
 
+            # Pick the right SQL query
             if option == "single":
                 query = """
                     SELECT loan_id, borrower_name, borrower_email, loan_type,
@@ -108,7 +115,7 @@ def index():
             else:
                 query = """
                     SELECT l.loan_id, b.bank_name, b.branch_name, b.city, b.state,
-                           l.borrower_name, l.loan_type, l.loan_amount, l.status
+                           l.borrower_name, l.loan_type, l.loan_amount, l.status, l.credit_score
                     FROM loans l
                     JOIN banks b ON l.bank_id = b.bank_id
                     WHERE l.loan_type = %s

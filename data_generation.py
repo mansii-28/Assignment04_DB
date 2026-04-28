@@ -5,9 +5,10 @@ import os
 
 fake = Faker()
 
+# Database configuration
 DB_NAME = "Assignment04_DB"
 USER = "postgres"
-PASSWORD = os.getenv("DB_PASSWORD", "your_postgres_password")
+PASSWORD = os.getenv("DB_PASSWORD", "[PASSWORD]")
 HOST = "localhost"
 PORT = "5432"
 
@@ -25,12 +26,14 @@ def get_connection():
     )
 
 def clear_data(cur):
+    """ Clear old data and reset ID counters """
     cur.execute("DELETE FROM loans;")
     cur.execute("DELETE FROM banks;")
     cur.execute("ALTER SEQUENCE loans_loan_id_seq RESTART WITH 1;")
     cur.execute("ALTER SEQUENCE banks_bank_id_seq RESTART WITH 1;")
 
 def insert_banks(cur, count=10000):
+    """ Insert 10,000 banks into the database """
     print("Inserting banks...")
 
     for _ in range(count):
@@ -54,6 +57,7 @@ def insert_banks(cur, count=10000):
         ))
 
 def insert_loans(cur, count=10000):
+    """ Insert 10,000 loans and link them to banks """
     print("Inserting loans...")
     
     email_domains = ["yahoo.com", "hotmail.com", "gmail.com", "outlook.com", "asu.cse412assignment04.edu"]
@@ -65,6 +69,7 @@ def insert_loans(cur, count=10000):
         domain = random.choice(email_domains)
         random_num = random.randint(10, 99)
         
+
         email_format = random.choice([
             f"{first_name.lower()}.{last_name.lower()}{random_num}@{domain}",
             f"{first_name.lower()}{last_name.lower()}{random_num}@{domain}",
@@ -103,7 +108,7 @@ def main():
     cur.close()
     conn.close()
 
-    print("Data generation completed successfully.")
+    print("Finished adding data to the database!")
 
 if __name__ == "__main__":
     main()
