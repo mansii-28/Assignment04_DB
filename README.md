@@ -54,6 +54,3 @@ There are four types of searches you can test:
 3. **With Indexing - Single Table:** Uses an index on the loan type.
 4. **With Indexing - Join:** Uses indexes on the IDs and city names to speed up the join.
 
-## Note
-
-Don't upload your actual database password to GitHub!
