@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Bank & Loan Search Performance Using PostgreSQL Indexes
 
 ## Project Description
@@ -33,7 +34,7 @@ Start the Flask development server:
 ```bash
 python app.py
 ```
-The application will be available at: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+The application will be available at: [http://127.0.0.1:5001](http://127.0.0.1:5001)
 
 ## Search Demonstrations
 The application features four primary search modes to demonstrate indexing benefits:
@@ -44,3 +45,6 @@ The application features four primary search modes to demonstrate indexing benef
 
 ## Security Note
 **Do not commit database passwords or secrets to GitHub.** The application is configured to read the database password from an environment variable (`DB_PASSWORD`) or use a placeholder if not set.
+=======
+# Assignment04_DB
+>>>>>>> fa88f949d9456094fff567988efd629210623916
